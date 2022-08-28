@@ -271,8 +271,18 @@ class Configure extends Object {
 			$config = array($config => $value);
 		}
 
+		/*
+		$config = [
+             'App' => [
+                  'base' => false,
+                  'baseUrl' => false,
+                  'dir' => APP_DIR,
+                  'webroot' => WEBROOT_DIR
+             ]
+        ]
+		*/
 		foreach ($config as $names => $value) {
-			$name = $_this->__configVarNames($names);
+			$name = $_this->__configVarNames($names); // $name = ['App']
 
 			switch (count($name)) {
 				case 3:
@@ -282,7 +292,12 @@ class Configure extends Object {
 					$_this->{$name[0]}[$name[1]] = $value;
 				break;
 				case 1:
-					$_this->{$name[0]} = $value;
+					$_this->{$name[0]} = $value; // 花括号的作用就是更清晰的定义变量的边界,重新给 $name[0] 赋值
+                    // 当 PHP 解析器遇到一个美元符号（$）时，它会和其它很多解析器一样，去组合尽量多的标识以形成一个合法的变量名。
+                    // 可以用花括号来明确变量名的界线。
+                    // $_this 除了访问成员属性和成员方法外 还可以访问局部变量？
+                    // 访问局部变量要带 $ 符号 $this->$name
+                    // 访问成员属性不带 $ 符号 $this->name
 				break;
 			}
 		}
@@ -321,7 +336,7 @@ class Configure extends Object {
  * @access public
  */
 	function read($var = 'debug') {
-		$_this =& Configure::getInstance();
+		$_this =& Configure::getInstance(); //这里使instance 的引用，如果instance 被销毁了，这里也跟着被销毁了。
 
 		if ($var === 'debug') {
 			if (!isset($_this->debug)) {
@@ -572,7 +587,7 @@ class Configure extends Object {
 	function __configVarNames($name) {
 		if (is_string($name)) {
 			if (strpos($name, ".")) {
-				return explode(".", $name);
+				return explode(".", $name); // 以 . 分割，将 name 打散为数组
 			}
 			return array($name);
 		}

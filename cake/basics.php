@@ -38,12 +38,18 @@
  * Patch for PHP < 5.0
  */
 if (!function_exists('clone')) {
+    // version_compare($v1, $v2) 如果 $v1 < $v2 返回 -1， 相等返回0，$v1 > $v2 返回1
 	if (version_compare(PHP_VERSION, '5.0') < 0) {
 		eval ('
 		function clone($object)
 		{
 			return $object;
 		}');
+		// ? 定义这个clone 方法有个毛用？
+
+		// eval('') 把字符串 code 作为PHP代码执行。
+        // 函数eval()语言结构是 非常危险的， 因为它允许执行任意 PHP 代码。 它这样用是很危险的。
+        // 如果您仔细的确认过，除了使用此结构以外 别无方法, 请多加注意，不要允许传入任何由用户 提供的、未经完整验证过的数据 。
 	}
 }
 /**
@@ -56,12 +62,16 @@ if (!function_exists('clone')) {
  *
  * @return boolean Success
  */
+
+// 这里定义的函数因为在框架执行流程里的很靠前的位置，所以整个框架内部都能调用到这些函数。
+
+// 在调用时加载 cakephp-1.2.0/app/config 目录下的指定的配置文件，config('database', 'core', 'inflections', 'routes');
 	function config() {
 		$args = func_get_args();
 		foreach ($args as $arg) {
 			if ($arg === 'database' && file_exists(CONFIGS . 'database.php')) {
-				include_once(CONFIGS . $arg . '.php');
-			} elseif (file_exists(CONFIGS . $arg . '.php')) {
+				include_once(CONFIGS . $arg . '.php'); // 只有database 这个文件名做了强限制并只执行一次
+			} elseif (file_exists(CONFIGS . $arg . '.php')) { // 自己另起的配置文件名也能盲加载进来
 				include_once(CONFIGS . $arg . '.php');
 
 				if (count($args) == 1) {
@@ -85,6 +95,7 @@ if (!function_exists('clone')) {
  *
  * @param string $name Filename without the .php part
  */
+// 从 cake/libs/ 目录加载 组件，uses('file', 'object'); 就会把这些文件加载进来，这里没有做文件是否存在的判断，如果文件不存在会触发致命错误并中断执行
 	function uses() {
 		$args = func_get_args();
 		foreach ($args as $file) {
@@ -95,6 +106,7 @@ if (!function_exists('clone')) {
  * Prints out debug information about given variable.
  *
  * Only runs if debug level is greater than zero.
+ * 仅在调试级别大于零时运行
  *
  * @param boolean $var Variable to show debug information for.
  * @param boolean $showHtml If set to true, the method prints the debug data in a screen-friendly way.
@@ -102,7 +114,11 @@ if (!function_exists('clone')) {
  * @link http://book.cakephp.org/view/458/Basic-Debugging
  */
 	function debug($var = false, $showHtml = false, $showFrom = true) {
-		if (Configure::read() > 0) {
+		// 这里虽然调用了 Configure::read() 方法，但是debug 函数并没有被立即调用，所以不会执行函数体
+        // 等debug() 被调用时，此时由于都在入口文件做了引入，所以这里能找到Configure::read()方法
+	    if (Configure::read() > 0) { // 不实例化就进行非静态方法的调用，这个非规范性的写法已经被废弃了
+	        // 静态方法中不能调用非静态方法，原因很简单，静态方法不需实例化，非静态方法需要实例化
+            // 非静态方法中可以self::调用静态方法。
 			if ($showFrom) {
 				$calledFrom = debug_backtrace();
 				echo '<strong>' . substr(str_replace(ROOT, '', $calledFrom[0]['file']), 1) . '</strong>';

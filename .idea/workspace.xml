@@ -2,14 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7f50afa4-d0f6-4313-8ab5-629ed9d46120" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/a.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/config/b.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/config/c.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/config/d.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cake/basics.php" beforeDir="false" afterPath="$PROJECT_DIR$/cake/basics.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cake/libs/configure.php" beforeDir="false" afterPath="$PROJECT_DIR$/cake/libs/configure.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/index.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/a.php" beforeDir="false" afterPath="$PROJECT_DIR$/test/a.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/config/b.php" beforeDir="false" afterPath="$PROJECT_DIR$/test/config/b.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

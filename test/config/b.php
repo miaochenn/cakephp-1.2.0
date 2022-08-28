@@ -1,8 +1,9 @@
 <?php
 
-define("APPS", APP . '/apps');
+//define("APPS", APP . '/apps');
 
-function config($a=1) {
+
+function config() {
     $numArgs = func_num_args();
     $argList = func_get_args();
     for ($i = 0; $i < $numArgs; $i++) {

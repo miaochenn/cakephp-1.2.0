@@ -131,7 +131,7 @@ class Configure extends Object {
  * @access public
  */
 	function &getInstance($boot = true) {
-		static $instance = array();
+		static $instance = array(); // 典型的单例模式，静态变量
 		if (!$instance) {
 			$instance[0] =& new Configure();
 			$instance[0]->__loadBootstrap($boot);

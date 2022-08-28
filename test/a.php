@@ -1,33 +1,20 @@
 <?php
-define("APP", '/app');
 
-//echo APPS; // 注意引入的位置，这个输出得在引入以后输出
+include_once './config/b.php';
 
-ini_set('include_path', '/Users/miaojingchao/HomeShare/'); // 最后加不加 '/' 都行,
-// /config/ 或者 /config 都可以
-
-
-include 'cakephp-1.2.0/test/config/c.php';
-require 'cakephp-1.2.0/test/config/b.php';
-//require 'b.php';
-//include 'c.php';
-
-
-echo ROOT;
-echo PHP_EOL;
-
-config(1,2,3);
-cConfig();
-
-function foo(&$var)
-{
-    $var++;
-    echo $var;
-}
-function &bar()
-{
-    $a = 5;
+function aa() {
+    $args = func_get_args();
+    $argc = count($args);
+    for ($i = 0; $i < $argc; $i++) {
+        if ($i + 1 < $argc) {
+            $a[$args[$i]] = $args[$i + 1];
+        } else {
+            $a[$args[$i]] = null;
+        }
+        $i++;
+    }
     return $a;
 }
-foo(bar());
 
+$res = aa('a',1,'b',2,'c');
+var_dump($res);

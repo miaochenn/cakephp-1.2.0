@@ -120,13 +120,38 @@ if (!function_exists('clone')) {
 	        // 静态方法中不能调用非静态方法，原因很简单，静态方法不需实例化，非静态方法需要实例化
             // 非静态方法中可以self::调用静态方法。
 			if ($showFrom) {
-				$calledFrom = debug_backtrace();
+				$calledFrom = debug_backtrace(); // 产生一条回溯跟踪
+                /*
+                var_dump(debug_backtrace());
+
+                array(1) {
+                    [0] =>
+                    array(4) {
+                    ["file"] => string(10) "/tmp/a.php"
+                    ["line"] => int(10)
+                    ["function"] => string(6) "a_test"
+                    ["args"]=>
+                        array(1) {
+                            [0] => &string(6) "friend"
+                        }
+                    }
+                }
+                */
 				echo '<strong>' . substr(str_replace(ROOT, '', $calledFrom[0]['file']), 1) . '</strong>';
 				echo ' (line <strong>' . $calledFrom[0]['line'] . '</strong>)';
 			}
 			echo "\n<pre class=\"cake-debug\">\n";
 
-			$var = print_r($var, true);
+			$var = print_r($var, true); // 自己赋值给自己？这有啥意义呢
+            /*
+            $var = true;
+            var_dump($var);
+            $var = print_r($var, true);
+            var_dump($var);
+
+            bool(true)
+            string(1) "1"
+            */
             // print_r(mixed $expression, bool $return = false): mixed;
             // 想要获取 print_r() 输出的内容，使用 return 参数。 当此参数为 true，print_r() 会直接返回信息，而不是输出
 			if ($showHtml) {
@@ -135,7 +160,7 @@ if (!function_exists('clone')) {
 			echo $var . "\n</pre>\n";
 		}
 	}
-if (!function_exists('getMicrotime')) {
+if (!function_exists('getMicrotime')) { // 对于这种全局函数，要先判断是否存在，不存在再执行声明，很有必要，因为全局函数不做判断如果被重新声明会报错
 /**
  * Returns microtime for execution time checking
  *
@@ -168,11 +193,20 @@ if (!function_exists('sortByKey')) {
 		foreach ($array as $key => $val) {
 			$sa[$key] = $val[$sortby];
 		}
-
+        // 对二维数组按指定字段排序，先将指定的字段抽出来封装成一个一维数组，然后对这个一维数组进行 系统函数调用排序
+        // 然后循环这个排好序的数组，然后将愿数组映射到这个封装即可
+/*
+sort() | 对数组进行升序排列
+rsort() | 对数组进行降序排列
+asort() | 根据关联数组的值，对数组进行升序排列
+arsort() | 根据关联数组的值，对数组进行降序排列
+ksort() | 根据关联数组的键，对数组进行升序排列
+krsort() | 根据关联数组的键，对数组进行降序排列
+*/
 		if ($order == 'asc') {
-			asort($sa, $type);
+			asort($sa, $type);  // 根据值升序排序 并保持索引关系, 第二个参数控制比较的类型，SORT_NUMERIC  单元被作为数字来比较；SORT_STRING  单元被作为字符串来比较
 		} else {
-			arsort($sa, $type);
+			arsort($sa, $type); // 根据值降序排序
 		}
 
 		foreach ($sa as $key => $val) {
@@ -185,6 +219,8 @@ if (!function_exists('array_combine')) {
 /**
  * Combines given identical arrays by using the first array's values as keys,
  * and the second one's values as values. (Implemented for backwards compatibility with PHP4)
+ * 合并两数组，以第一个数组的值为键，以第二个数组的值为值。两数组长度必须相等且大于零
+ * combines 组合 合并
  *
  * @param array $a1 Array to use for keys
  * @param array $a2 Array to use for values
@@ -202,6 +238,7 @@ if (!function_exists('array_combine')) {
 		if ($c1 <= 0) {
 			return false;
 		}
+        // 长度必须相等且大于0
 		$output = array();
 
 		for ($i = 0; $i < $c1; $i++) {
@@ -212,6 +249,7 @@ if (!function_exists('array_combine')) {
 }
 /**
  * Convenience method for htmlspecialchars.
+ * 对 htmlspecialchars() 函数做一个封装使其更简便运用
  *
  * @param string $text Text to wrap through htmlspecialchars
  * @param string $charset Character set to use when escaping.  Defaults to config value in 'App.encoding' or 'UTF-8'
@@ -220,8 +258,24 @@ if (!function_exists('array_combine')) {
  */
 	function h($text, $charset = null) {
 		if (is_array($text)) {
-			return array_map('h', $text);
+            // 递归 + 回调，用的高级
+			return array_map('h', $text); // 为数组的每个元素应用回调函数。在这里这个回调函数还会产生递归，但是不会是个死循环，
 		}
+        /*
+        function cube($n)
+        {
+            return ($n * $n * $n);
+        }
+        $a = [1, 2, 3];
+        $b = array_map('cube', $a);
+        print_r($b);
+        Array
+        (
+            [0] => 1
+            [1] => 8
+            [2] => 27
+        )
+        */
 		if (empty($charset)) {
 			$charset = Configure::read('App.encoding');
 		}
@@ -229,7 +283,29 @@ if (!function_exists('array_combine')) {
 			$charset = 'UTF-8';
 		}
 		return htmlspecialchars($text, ENT_QUOTES, $charset);
+        //htmlspecialchars() 将特殊字符转换为 HTML 实体; 第二个参数 ENT_QUOTES 既转换双引号也转换单引号
+        // $new = htmlspecialchars("<a href='test'>Test</a>", ENT_QUOTES);
+        // echo $new; // &lt;a href=&#039;test&#039;&gt;Test&lt;/a&gt;  只对特殊字符进行转换。
 	}
+
+/*
+$text = [
+"<a href='test'>Test</a>",
+"<a href='baidu.com'>百度</a>",
+"<a href='weibo.com'>微博</a>",
+];
+var_dump(h($text));
+
+array(3) {
+[0]=>
+string(45) "&lt;a href=&#039;test&#039;&gt;Test&lt;/a&gt;"
+[1]=>
+string(52) "&lt;a href=&#039;baidu.com&#039;&gt;百度&lt;/a&gt;"
+[2]=>
+string(52) "&lt;a href=&#039;weibo.com&#039;&gt;微博&lt;/a&gt;"
+}*/
+
+/*
 /**
  * Returns an array of all the given parameters.
  *
@@ -247,25 +323,45 @@ if (!function_exists('array_combine')) {
  * @link http://book.cakephp.org/view/694/a
  */
 	function a() {
-		$args = func_get_args();
+		$args = func_get_args(); // 如果一个函数系统调用的比较多，可以把它升级为自定义全局函数并简化函数名方便调用
+        // 他返回的是最内层函数传进来的参数 也就是a()函数
+        /*function b() {
+            $args = a(); // 不能这么用，什么也接收不到，它接收的是a(1,2,3) 传入的参数。
+            return $args;
+        }
+        var_dump(b(1,2,3));
+        array(0) {
+
+        }*/
+
 		return $args;
 	}
 /**
  * Constructs associative array from pairs of arguments.
+ * 从参数对 构造关联数组
  *
  * Example:
  * <code>
- * aa('a','b')
+ * aa('a',1,'b',2,'c') 是偶数对才好才更有意义
  * </code>
  *
  * Would return:
  * <code>
- * array('a'=>'b')
+ * array(3) {
+ *  ["a"]=>
+ *  int(1)
+ *  ["b"]=>
+ *  int(2)
+ *  ["c"]=>
+ *  NULL
+ * }
  * </code>
  *
  * @return array Associative array
  * @link http://book.cakephp.org/view/695/aa
  */
+
+// 这个方法很巧妙，利用现有的系统函数构造出很实用的 自定义函数
 	function aa() {
 		$args = func_get_args();
 		$argc = count($args);
